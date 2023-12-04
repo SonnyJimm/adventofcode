@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -13,52 +14,25 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	numbers := []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
 	defer file.Close()
 	reader := bufio.NewScanner(file)
 	result := 0
 	for reader.Scan() {
 		line := reader.Text()
-		num := 0
-		for i := 0; i < len(line); i++ {
-			found := false
-			if line[i] >= '0' && line[i] <= '9' {
-				num += int(line[i] - '0')
-				found = true
-			}
-			for index, val := range numbers {
-				if strings.HasPrefix(line[i:], val) {
-					num += index + 1
-					found = true
-					break
+		// ok := true
+		data := strings.Split(line, ": ")
+		conf := map[string]int{"red": 0, "green": 0, "blue": 0}
+		for _, val := range strings.Split(data[1], "; ") {
+			for _, cube := range strings.Split(val, ", ") {
+				detail := strings.Split(cube, " ")
+				amount, _ := strconv.Atoi(detail[0])
+				color := detail[1]
+				if amount > conf[color] {
+					conf[color] = amount
 				}
 			}
-			if found {
-				break
-			}
 		}
-		for i := len(line) - 1; i >= 0; i-- {
-			found := false
-			if line[i] >= '0' && line[i] <= '9' {
-				num *= 10
-				num += int(line[i] - '0')
-				found = true
-			}
-			for index, val := range numbers {
-				if strings.HasPrefix(line[i:], val) {
-					num *= 10
-					num += index + 1
-					found = true
-					break
-				}
-			}
-			if found {
-				break
-			}
-		}
-		fmt.Println(num)
-		fmt.Println(line)
-		result += num
+		result += conf["red"] * conf["green"] * conf["blue"]
 	}
-	fmt.Println("calibrated result :", result)
+	fmt.Println("By the configureation : ", result)
 }
