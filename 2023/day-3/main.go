@@ -31,6 +31,9 @@ func main() {
 		line := scanner.Text()
 		cache = append(cache, []byte(line))
 	}
+	part2(cache)
+}
+func part1(cache [][]byte) {
 	sum := 0
 	for i := 0; i < len(cache); i++ {
 		for j := 0; j < len(cache[i]); j++ {
@@ -47,7 +50,26 @@ func main() {
 	}
 	fmt.Println(sum)
 }
-
+func part2(cache [][]byte) {
+	sum := 0
+	for i := 0; i < len(cache); i++ {
+		for j := 0; j < len(cache[i]); j++ {
+			if cache[i][j] != '*' {
+				continue
+			}
+			nums := make([]int, 0)
+			for _, move := range moves {
+				if isNumber(cache, i+move[0], j+move[1]) {
+					nums = append(nums, parseNumber(cache, i+move[0], j+move[1]))
+				}
+			}
+			if len(nums) == 2 {
+				sum += nums[0] * nums[1]
+			}
+		}
+	}
+	fmt.Println(sum)
+}
 func isNumber(cache [][]byte, i, j int) bool {
 	if i < 0 || i >= len(cache) {
 		return false
